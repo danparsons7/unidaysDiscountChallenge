@@ -1,0 +1,109 @@
+#include "pch.h"
+#include <iostream>
+
+using namespace std;
+
+const int pricingRulesSize = 5;
+
+struct priceRules 
+{
+	char item;
+	int price;
+	int discountNumber;
+	int discountPrice;
+};
+
+struct prices
+{
+	int totalPrice;
+	int deliveryCharge;
+};
+
+struct unidaysDiscountChallenge
+{
+private:
+	priceRules discount[pricingRulesSize] =
+	{ {'A', 8, 1, 8},
+	{'B', 12, 2, 20},
+	{'C', 4, 3, 10},
+	{'D', 7, 2, 7},
+	{'E', 5, 3, 10}
+	};
+	int basket[pricingRulesSize] = { 0 };
+public:
+	void addToBasket(char item);
+	prices calculateTotalPrice();
+};
+
+
+
+int main()
+{
+    cout << "Hello World!\n"; 
+
+	unidaysDiscountChallenge example;
+
+	example.addToBasket('C');
+	example.addToBasket('C');
+	example.addToBasket('C');
+	example.addToBasket('C');
+
+	prices result = example.calculateTotalPrice();
+
+	int totalPrice = result.totalPrice;
+	int deliveryCharge = result.deliveryCharge;
+
+	int overall = result.totalPrice + result.deliveryCharge;
+
+	cout << totalPrice << endl;
+	cout << overall << endl;
+
+	return 0;
+}
+
+void unidaysDiscountChallenge::addToBasket(char item)
+{
+	for (int i = 0; i < 5; i += 1)
+	{
+		if (item == discount[i].item)
+		{
+			basket[i] += 1; // adds a item into the basket array
+			break; // breaks as it can stop the loop if it has been found
+		}
+	}
+		
+}
+prices unidaysDiscountChallenge::calculateTotalPrice()
+{
+	prices overallPrice = { 0 };
+
+	for (int i = 0; i < pricingRulesSize; i += 1)
+	{
+
+		if (basket[i] != 0) // only worth doing if there are items in the basket
+		{
+
+			int a = basket[i] / discount[i].discountNumber; // works out if enough items for the discount
+
+			int b = basket[i] % discount[i].discountNumber; // charges the remainder at the normal rate
+
+			overallPrice.totalPrice += (a * discount[i].discountPrice);
+			
+			overallPrice.totalPrice += (b * discount[i].price);
+
+		}
+
+	}
+
+
+	if (overallPrice.totalPrice < 50) // if the overall price is over 50 then theres no delivery fee ... else its £7
+	{
+		overallPrice.deliveryCharge = 7;
+	}
+	else
+	{
+		overallPrice.deliveryCharge = 0;
+	}
+
+	return overallPrice;
+}
